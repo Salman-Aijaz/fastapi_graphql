@@ -2,7 +2,7 @@ from fastapi import FastAPI
 import logging
 from database import init_db
 from strawberry.fastapi import GraphQLRouter
-from graphql_schema import schema
+from app.graphql_schema import schema
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

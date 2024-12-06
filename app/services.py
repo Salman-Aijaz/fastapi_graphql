@@ -1,6 +1,6 @@
-from repository import BookRepository
+from app.repository import BookRepository
 from models import BookNotFoundError, InvalidBookDataError
-from schemas import BookInput, BookUpdateInput, Book
+from app.schemas import BookInput, BookUpdateInput, Book
 
 class BookService:
 

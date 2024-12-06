@@ -1,7 +1,7 @@
 from sqlmodel import select
 from database import get_db
 from models import Book as BookModel
-from schemas import BookInput, BookUpdateInput
+from app.schemas import BookInput, BookUpdateInput
 
 # This file implements the repository pattern to interact with the database. 
 # The idea is to separate the database logic from the business logic.
@@ -37,7 +37,11 @@ class BookRepository:
     @staticmethod
     async def update_book(book_id: int, book_data: BookUpdateInput):
         async for session in get_db():
-            book = await BookRepository.get_book_by_id(book_id)
+            # Fetch the book within the same session
+            statement = select(BookModel).where(BookModel.id == book_id)
+            result = await session.execute(statement)
+            book = result.scalar_one_or_none()
+
             if book is None:
                 return None
 
@@ -49,16 +53,20 @@ class BookRepository:
             if book_data.quantity is not None and book_data.quantity >= 0:
                 book.quantity = book_data.quantity
 
-            # No need to add book again as it's already in the session
+            # Commit and refresh the book instance
             await session.commit()
-            await session.refresh(book)  # Refresh to get updated data
+            await session.refresh(book)
 
             return book
 
     @staticmethod
     async def delete_book(book_id: int):
         async for session in get_db():
-            book = await BookRepository.get_book_by_id(book_id)
+            # Fetch the book within the same session
+            statement = select(BookModel).where(BookModel.id == book_id)
+            result = await session.execute(statement)
+            book = result.scalar_one_or_none()
+
             if book:
                 await session.delete(book)
                 await session.commit()

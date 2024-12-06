@@ -1,6 +1,6 @@
 import strawberry
-from services import BookService
-from schemas import BookInput, BookUpdateInput, Book
+from app.services import BookService
+from app.schemas import BookInput, BookUpdateInput, Book
 
 @strawberry.type
 class Query:
